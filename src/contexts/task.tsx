@@ -1,8 +1,8 @@
 'use client'
 
-import { createContext, ReactNode, use, useState } from 'react'
+import { createContext, ReactNode, useState, useEffect, use } from 'react'
 
-interface taskProviderProps {
+interface TaskProviderProps {
   children: ReactNode
 }
 
@@ -10,40 +10,62 @@ export interface ITask {
   id: number
   text: string
   checked: boolean
+  deleted: boolean
+  date: string
 }
 
-interface taskContextData {
+interface TaskContextData {
   tasks: Array<ITask>
   handleAddTask: (text: string) => void
   handleRemoveTask: (id: number) => void
   handleToggleCheck: (id: number) => void
 }
 
-const taskContext = createContext({} as taskContextData)
+const taskContext = createContext({} as TaskContextData)
 
-export function TaskProvider({ children }: taskProviderProps) {
+export function TaskProvider({ children }: TaskProviderProps) {
   const [tasks, setTasks] = useState<ITask[]>([])
 
+
+
   function handleAddTask(text: string) {
-    const newTask = {
+    const newTask: ITask = {
+      id: Date.now(),
       text,
       checked: false,
-      id: Math.floor(Math.random() * 1000),
+      deleted: false,
+      date: new Date().toISOString()
     }
-
     setTasks([...tasks, newTask])
   }
+
   function handleRemoveTask(id: number) {
-    const newTasks = tasks.filter((task) => task.id !== id)
-    setTasks(newTasks)
+    const updatedTasks = tasks.map(task =>
+      task.id === id ? { ...task, deleted: true } : task
+    )
+    setTasks(updatedTasks)
   }
+
   function handleToggleCheck(id: number) {
-    const newTasks = tasks.map((task: ITask) => {
-      if (id === task.id) return { ...task, checked: !task.checked }
-      else return task
-    })
-    setTasks(newTasks)
+    const updatedTasks = tasks.map(task =>
+      task.id === id ? { ...task, checked: !task.checked } : task
+    )
+    setTasks(updatedTasks)
   }
+
+    
+  useEffect(() => {
+    const storedTasks = localStorage.getItem('@tasK:tasks')
+    if (storedTasks) {
+      setTasks(JSON.parse(storedTasks))
+      console.log("Loading tasks", JSON.parse(storedTasks))
+    }
+  }, [])
+
+  useEffect(() => {
+    console.log("SAVED")
+    localStorage.setItem('@tasK:tasks', JSON.stringify(tasks))
+  }, [tasks])
 
   return (
     <taskContext.Provider
