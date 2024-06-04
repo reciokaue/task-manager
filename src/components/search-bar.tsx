@@ -19,7 +19,7 @@ export function SearchBar() {
   return (
     <header className="flex items-center gap-3">
       <input
-        className="w-full rounded-lg bg-gray-500 p-4 text-lg placeholder:text-gray-300"
+        className="w-full rounded-lg bg-gray-500 p-4 text-lg placeholder:text-gray-300 text-gray-200"
         type="text"
         placeholder="Adicione uma nova tarefa"
         value={text}
