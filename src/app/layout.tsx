@@ -1,7 +1,9 @@
 import './globals.css'
 
+import { CheckCheck, Settings, SquareChevronRight } from 'lucide-react'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import Link from 'next/link'
 
 import { TaskProvider } from '@/contexts/task'
 
@@ -22,10 +24,25 @@ export default function RootLayout({
       <body className="flex h-screen w-screen flex-col">
         <TaskProvider>
           <header className="flex h-52 w-screen bg-gray-700">
-            <div className="mx-auto w-full max-w-screen-xl px-10">
-              <h1 className="mt-14 text-5xl font-extrabold text-yellow-500">
-                TasK
-              </h1>
+            <div className="mx-auto flex w-full max-w-screen-xl items-center justify-between px-10">
+              <h1 className="text-5xl font-extrabold text-yellow-500">TasK</h1>
+              <div className="flex gap-2">
+                <Link href="/">
+                  <button className="rounded-md p-3 transition-colors hover:bg-gray-600">
+                    <CheckCheck size={32} />
+                  </button>
+                </Link>
+                <Link href="/config">
+                  <button className="rounded-md p-3 transition-colors hover:bg-gray-600">
+                    <Settings size={32} />
+                  </button>
+                </Link>
+                <Link href="/history">
+                  <button className="rounded-md p-3 transition-colors hover:bg-gray-600">
+                    <SquareChevronRight size={32} />
+                  </button>
+                </Link>
+              </div>
             </div>
           </header>
           <main className="h-screen w-screen bg-gray-600">
