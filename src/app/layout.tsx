@@ -1,6 +1,6 @@
 import './globals.css'
 
-import { CheckCheck, Settings, SquareChevronRight } from 'lucide-react'
+import { CheckCheck, SquareChevronRight } from 'lucide-react'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Link from 'next/link'

@@ -23,7 +23,7 @@ export function DatePicker({ onSelectDate, date }: DatePickerProps) {
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          variant={'outline'}
+          variant="outline"
           className={cn(
             'justify-start text-left font-normal hover:bg-gray-600',
             !date && 'text-muted-foreground',

@@ -36,7 +36,7 @@ export default function History() {
     <div className="flex flex-col rounded-lg bg-gray-500 px-6 py-11">
       <h1 className="mb-8 text-2xl font-bold text-gray-50">Meu histórico</h1>
       <div className="flex overflow-hidden rounded-lg">
-        <table className="w-full table-auto text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400">
+        <table className="w-full table-auto text-left text-sm text-gray-500 dark:text-gray-400 rtl:text-right">
           <thead className="bg-gray-400 text-xs uppercase text-gray-200">
             <tr>
               <th scope="col" className="px-6 py-3">
