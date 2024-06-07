@@ -1,15 +1,15 @@
 'use client'
 
-import { SearchBar } from '@/components/search-bar'
+import { CreateTask } from '@/components/create-task'
 import { TaskList } from '@/components/task-list'
-import { TasksHeader } from '@/components/tasks-header'
 
 export default function Home() {
   return (
     <>
-      <SearchBar />
-      <TasksHeader />
       <TaskList />
+      <footer className="sticky bottom-0 left-0 right-0 px-4 py-6 lg:px-0">
+        <CreateTask />
+      </footer>
     </>
   )
 }

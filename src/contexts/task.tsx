@@ -1,6 +1,12 @@
 'use client'
 
-import { createContext, ReactNode, use, useEffect, useState } from 'react'
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 
 interface TaskProviderProps {
   children: ReactNode
@@ -8,52 +14,89 @@ interface TaskProviderProps {
 
 export interface ITask {
   id: number
-  text: string
+  title: string
+  description: string
+  dueDate: Date
+  priority: 'high' | 'medium' | 'low'
   checked: boolean
-  deleted: boolean
-  date: string
+}
+
+export const priorityPlaceholder = {
+  low: 'Baixa',
+  medium: 'Media',
+  high: 'Alta',
 }
 
 interface TaskContextData {
   tasks: Array<ITask>
-  handleAddTask: (text: string) => void
-  handleRemoveTask: (task: ITask) => void
-  handleToggleCheck: (id: number) => void
+  addTask: (
+    title: string,
+    description: string,
+    dueDate: Date,
+    priority: 'high' | 'medium' | 'low',
+  ) => void
+  updateTask: (id: number, updatedTask: Partial<ITask>) => void
+  deleteTask: (task: ITask) => void
+  totalTasks: number
+  completedTasks: number
+  pendingTasks: number
 }
 
-const taskContext = createContext({} as TaskContextData)
+const TaskContext = createContext<TaskContextData>({} as TaskContextData)
 
 export function TaskProvider({ children }: TaskProviderProps) {
   const [tasks, setTasks] = useState<ITask[]>([])
-  const [removedTasks, setRemovedTasks] = useState<ITask[]>([])
 
-  function handleAddTask(text: string) {
+  const totalTasks = tasks.length
+  const completedTasks = tasks.filter((task) => !task.checked).length
+  const pendingTasks = tasks.filter((task) => task.checked).length
+
+  function addTask(
+    title: string,
+    description: string,
+    dueDate: Date,
+    priority: 'high' | 'medium' | 'low',
+  ) {
     const newTask: ITask = {
       id: Date.now(),
-      text,
+      title,
+      description,
+      dueDate,
+      priority,
       checked: false,
-      deleted: false,
-      date: new Date().toISOString(),
     }
-    setTasks([...tasks, newTask])
+    setTasks([newTask, ...tasks])
   }
 
-  function handleRemoveTask(task: ITask) {
-    const updatedTasks = tasks.filter((t) => t.id !== task.id)
-
-    setTasks(updatedTasks)
-    setRemovedTasks([task, ...removedTasks])
-  }
-
-  function handleToggleCheck(id: number) {
-    const updatedTasks = tasks.map((task) =>
-      task.id === id ? { ...task, checked: !task.checked } : task,
+  function updateTask(id: number, updatedTask: Partial<ITask>) {
+    setTasks(
+      tasks.map((task) =>
+        task.id === id ? { ...task, ...updatedTask } : task,
+      ),
     )
-    setTasks(updatedTasks)
+  }
+
+  function deleteTask(deletedTask: ITask) {
+    setTasks(tasks.filter((task) => task.id !== deletedTask.id))
+
+    const deletedTasksStorage = localStorage.getItem('@taskApp:deletedTasks')
+    console.log(deletedTasksStorage)
+    if (deletedTasksStorage) {
+      const newDeletedTasks = [deletedTask, ...JSON.parse(deletedTasksStorage)]
+      localStorage.setItem(
+        '@taskApp:deletedTasks',
+        JSON.stringify(newDeletedTasks),
+      )
+    } else {
+      localStorage.setItem(
+        '@taskApp:deletedTasks',
+        JSON.stringify([deletedTask]),
+      )
+    }
   }
 
   useEffect(() => {
-    const storedTasks = localStorage.getItem('@tasK:tasks')
+    const storedTasks = localStorage.getItem('@taskApp:tasks')
     if (storedTasks) {
       setTasks(JSON.parse(storedTasks))
     }
@@ -61,18 +104,24 @@ export function TaskProvider({ children }: TaskProviderProps) {
 
   useEffect(() => {
     if (tasks.length > 0)
-      localStorage.setItem('@tasK:tasks', JSON.stringify(tasks))
-    if (removedTasks.length > 0)
-      localStorage.setItem('@tasK:removed-tasks', JSON.stringify(tasks))
-  }, [tasks, removedTasks])
+      localStorage.setItem('@taskApp:tasks', JSON.stringify(tasks))
+  }, [tasks])
 
   return (
-    <taskContext.Provider
-      value={{ tasks, handleAddTask, handleRemoveTask, handleToggleCheck }}
+    <TaskContext.Provider
+      value={{
+        tasks,
+        addTask,
+        updateTask,
+        deleteTask,
+        totalTasks,
+        completedTasks,
+        pendingTasks,
+      }}
     >
       {children}
-    </taskContext.Provider>
+    </TaskContext.Provider>
   )
 }
 
-export const useTask = () => use(taskContext)
+export const useTask = () => useContext(TaskContext)
